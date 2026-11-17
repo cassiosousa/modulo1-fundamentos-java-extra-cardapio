@@ -1,3 +1,4 @@
+create schema  cardapio;
 use cardapio;
 
 create table item_cardapio (

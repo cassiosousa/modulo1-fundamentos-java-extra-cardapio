@@ -21,7 +21,7 @@ public class ServidorItensCardapioComSocket {
 
         Executor executor = Executors.newFixedThreadPool(50);
 
-        try(ServerSocket serverSocket = new ServerSocket(8000)) {
+        try (ServerSocket serverSocket = new ServerSocket(8000)) {
             System.out.println("Subiu servidor!");
 
             while (true) {
@@ -95,6 +95,15 @@ public class ServidorItensCardapioComSocket {
                 clientOut.println("HTTP/1.1 200 OK");
                 clientOut.println();
                 clientOut.println(totalItens);
+            } else if ("DELETE".equals(method) && requestURI.startsWith("/itens-cardapio")) {
+                String id = requestURI.substring(requestURI.lastIndexOf("/") + 1);
+                if (database.removeItemCardapio(Long.parseLong(id))) {
+                    clientOut.println("HTTP/1.1 204 OK");
+                    clientOut.println();
+                } else {
+                    clientOut.println("HTTP/1.1 404 Not Found");
+                    clientOut.println();
+                }
             } else if ("POST".equals(method) && "/itens-cardapio".equals(requestURI)) {
                 System.out.println("Chamou adição de itens de cardápio");
 
@@ -109,8 +118,7 @@ public class ServidorItensCardapioComSocket {
                 database.adicionaItemCardapio(item);
 
                 clientOut.println("HTTP/1.1 200 OK");
-            }
-            else {
+            } else {
                 System.out.println("URI não encontrada: " + requestURI);
                 clientOut.println("HTTP/1.1 404 Not Found");
             }
